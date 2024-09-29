@@ -6,7 +6,8 @@ From 1934 to 1963, San Francisco was infamous for housing some of the world's mo
 
 Here is a map with the historical locations till 2016 of the most notorious crimes in the city Frisco.
 
-![San Francisco Crimes](static/crime_map.html)
+## Interactive Crime Map
+[San Francisco crimes map](https://elopezfune.github.io/ Interactive_Jupyter_SFCrime_Dashboard/static/crime_map.html)
 
 ---
 
