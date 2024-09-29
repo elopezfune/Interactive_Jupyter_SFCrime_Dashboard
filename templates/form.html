@@ -1,0 +1,137 @@
+<!-- templates/form.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crime Localizer</title>
+    <style>
+        /* General page styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Container for form elements and map */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* Styling the form container to be horizontal */
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* Individual form elements */
+        .form-element {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* Map container */
+        .map-container {
+            width: 100%;
+            height: 600px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Crime Localizer</h1>
+    <div class="container">
+        <!-- Form container arranged horizontally -->
+        <div class="form-container">
+            <!-- Select Districts -->
+            <div class="form-element">
+                <label for="districts">Select Districts:</label><br>
+                <select id="districts" name="districts" multiple style="width: 100%; height: 100px;">
+                    {% for district in districts %}
+                    <option value="{{ district }}" {% if district in current_districts %}selected{% endif %}>{{ district }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Select Crime Categories -->
+            <div class="form-element">
+                <label for="categories">Select Crime Categories:</label><br>
+                <select id="categories" name="categories" multiple style="width: 100%; height: 100px;">
+                    {% for category in categories %}
+                    <option value="{{ category }}" {% if category in current_categories %}selected{% endif %}>{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Max Number of Cases -->
+            <div class="form-element">
+                <label for="limit">Max Number of Cases:</label><br>
+                <input type="number" id="limit" name="limit" min="0" max="5000" value="{{ current_limit }}" style="width: 100%;">
+            </div>
+        </div>
+
+        <!-- Map container -->
+        <div class="map-container" id="mapContainer">
+            {% if map_url %}
+            <iframe src="{{ map_url }}" id="crimeMap"></iframe>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Function to fetch the data and update the map
+        async function updateMap() {
+            const districts = Array.from(document.getElementById('districts').selectedOptions).map(option => option.value);
+            const categories = Array.from(document.getElementById('categories').selectedOptions).map(option => option.value);
+            const limit = document.getElementById('limit').value;
+
+            if (districts.length === 0 || categories.length === 0) {
+                return;  // Prevent making a request if nothing is selected
+            }
+
+            const formData = new FormData();
+            districts.forEach(district => formData.append('districts', district));
+            categories.forEach(category => formData.append('categories', category));
+            formData.append('limit', limit);
+
+            try {
+                const response = await fetch("/", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const responseText = await response.text();
+                    // Replace the entire body with the new HTML content
+                    document.open();
+                    document.write(responseText);
+                    document.close();
+                }
+            } catch (error) {
+                console.error("Error updating the map:", error);
+            }
+        }
+
+        // Directly call updateMap every time there is any change
+        document.getElementById('districts').addEventListener('change', updateMap);
+        document.getElementById('categories').addEventListener('change', updateMap);
+        document.getElementById('limit').addEventListener('input', updateMap);
+    </script>
+</body>
+</html>
+
