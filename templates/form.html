@@ -81,7 +81,8 @@
             <!-- Max Number of Cases -->
             <div class="form-element">
                 <label for="limit">Max Number of Cases:</label><br>
-                <input type="number" id="limit" name="limit" min="0" max="5000" value="{{ current_limit }}" style="width: 100%;">
+                <input type="range" id="limit" name="limit" min="0" max="5000" value="{{ current_limit }}" style="width: 100%;" oninput="document.getElementById('limitValue').innerText = this.value">
+                <span id="limitValue">{{ current_limit }}</span>
             </div>
         </div>
 
