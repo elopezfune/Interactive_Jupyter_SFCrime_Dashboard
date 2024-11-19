@@ -51,3 +51,6 @@ async def process_home(request: Request, districts: List[str] = Form(...), categ
         "current_categories": categories,
         "current_limit": limit
     })
+
+if __name__ == '__main__':
+    uvicorn.run(app, port=8080, host='0.0.0.0')
